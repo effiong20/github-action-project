@@ -15,5 +15,5 @@ jobs:
 
          -  name: Run smoke text 
             run: | 
-               sleep
+               sleep 5
                curl http://localhost:5000/health   
