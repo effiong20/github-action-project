@@ -1,0 +1,19 @@
+name: Container-project
+on: push
+jobs:
+    job-one:
+        runs-on: ubuntu-latest
+        steps:
+         -  name: Checkout Code
+            uses: actions/checkout@v6
+        
+         -  name: build the code into docker images
+            run:  docker build -t giftedid/pythonimage:v1:0:0 .
+
+         -  name: Run docker images
+            run: docker run -d --name python_image -p5000:5000 giftedid/pythonimage:v1:0:0
+
+         -  name: Run smoke text 
+            run: | 
+               sleep
+               curl http://localhost:5000/health   
