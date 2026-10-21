@@ -21,7 +21,7 @@ jobs:
                 tags: giftedid/app:v1.1.0
               
          -   name: Run container image
-             run: docker run -d -p 5000:5000 --name my_sample_app  giftedid/app:v1.1.0
+             run: docker run -d -p 5000:5000 --name my_sample_app  giftedid/app:v1.1.1
             
          -   name: Smoke test
              run: | 
