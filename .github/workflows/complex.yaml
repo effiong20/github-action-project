@@ -1,0 +1,73 @@
+name: docker auth project
+on: 
+    push:
+        branches:
+         - feature/*
+        paths:
+            - .github/workflows/**
+            - app.py
+            - reqiurement.txt
+
+    pull_request:
+        branches:
+          - main
+        types:
+          - reopened 
+          - opened
+env:
+    DOCKERHUB_USERNAME: gitftedid
+    APPLICATION_NAME: myapp
+
+jobs:
+    job-one:
+        runs-on: ubuntu-latest
+        if: ${{ (github.event_name == 'push' && startsWith(github.ref_name, 'feature/')) || (github.event_name == 'pull_request' && github.base_ref == 'main' && !contains(github.event.pull_request.title, 'APP')) }}
+        steps:
+         -   name: clone sources code
+             uses: action/checkout@v6
+
+         -   name: Image tag
+             run:
+                echo "${IMAGE_TAG}=v${GITHUB_RUN_NUMBER}-${GITHUB_SHA::6}" >> $GITHUB.ENV    
+
+         -   name: get more variable information 
+             run: | 
+              echo "my application is: ${APPLICATION_NAME}"
+              echo "name of actor is:  ${GITHUB_ACTOR}" 
+              echo "actor id is: ${GITHUB_ACTOR_ID} "
+              echo "name of event triggerd: ${GITHUB_EVENT_NAME}"
+              echo "image_tag: ${IMAGE_TAG}"
+
+         -   name: dockerhub_login
+             uses: docker/login-action@v4
+             with:
+                username: ${{ env.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }} 
+           
+         -   name: Build and push
+             uses: docker/build-push-action@v7
+             with:
+                context: .
+                push: fales
+                tags: ${{env.DOCKERHUB_USERNAME}}/${{env.APPLICATION_NAME}}:${IMAGE_TAG}
+              
+         -  name: Run container image
+            run: 
+                docker run -d -p 5000:5000 --name my_app ${{env.DOCKERHUB_USERNAME}}/${{env.APPLICATION_NAME}}:${IMAGE_TAG}
+            
+         - name: Smoke test
+           run: | 
+              sleep 5
+              curl http://localhost:5000
+              curl http://localhost:5000/health  
+
+         - name: push image if success
+           if:  ${{ success() }} 
+           run: |
+             docker push ${{env.DOCKERHUB_USERNAME}}/${{env.APPLICATION_NAME}}:${IMAGE_TAG}
+                    
+         - name: logs of container if there is failure
+           if:  ${{ failure() }} 
+           run: |
+             docker push my_app      
+                         
