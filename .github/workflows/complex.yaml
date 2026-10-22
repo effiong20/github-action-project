@@ -6,6 +6,7 @@ on:
         paths:
             - .github/workflows/**
             - app.py
+            - Dockerfile  
             - reqiurement.txt
 
     pull_request:
@@ -25,7 +26,7 @@ jobs:
         if: ${{ (github.event_name == 'push' && startsWith(github.ref_name, 'feature/')) || (github.event_name == 'pull_request' && github.base_ref == 'main' && !contains(github.event.pull_request.title, 'APP')) }}
         steps:
          -   name: clone sources code
-             uses: action/checkout@v6
+             uses: actions/checkout@v6
 
          -   name: Image tag
              run:
