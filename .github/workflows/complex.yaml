@@ -14,6 +14,7 @@ on:
         types:
           - reopened 
           - opened
+          - synchronized  
 env:
     DOCKERHUB_USERNAME: gitftedid
     APPLICATION_NAME: myapp
