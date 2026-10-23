@@ -17,7 +17,7 @@ on:
           - opened
           - synchronized  
 env:
-    DOCKERHUB_USERNAME: gitftedid
+    DOCKERHUB_USERNAME: giftedid
     APPLICATION_NAME: myapp
 
 jobs:
@@ -29,7 +29,7 @@ jobs:
              uses: actions/checkout@v6
 
          -   name: Image tag
-             run:
+             run: |
                 echo "${IMAGE_TAG}=v${GITHUB_RUN_NUMBER}-${GITHUB_SHA::6}" >> $GITHUB.ENV    
 
          -   name: get more variable information 
